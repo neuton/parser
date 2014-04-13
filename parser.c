@@ -13,12 +13,12 @@ static short prio(char op)
 static real evals_(char s[], char sx[], real x[], unsigned* ishift, real init_r, char init_a, short p)
 {
 	real r=init_r, n=0, k;
-	unsigned d=0, j, i=0;
-	char a=init_a, c=s[0];
-	if (!c) return NAN;
+	unsigned d=0, i=0;
+	short j;
+	char a=init_a, c=s[0], t;
 	while (1)
 	{
-		if (c==' ');
+		if ((c==' ')||(c=='\t')||(c=='\n'));
 		else if ((c>='0')&&(c<='9'))
 		{
 			if (d>0) n+=(real)(c-'0')/(d*=10);
@@ -27,7 +27,7 @@ static real evals_(char s[], char sx[], real x[], unsigned* ishift, real init_r,
 		else if ((c=='.')||(c==','))
 			d=1;
 		else if (c=='(')
-			{ i++; n=evals_(s+i, sx, x, &i, 0, '+', 0); }
+			{ i++; n=evals_(s+i, sx, x, &i, 0, '+', 0); if (!s[i]) return r;}
 		else if ((c=='s')&&(s[i+1]=='i')&&(s[i+2]=='n')&&(s[i+3]=='('))
 			{ i+=4; n=sin(evals_(s+i, sx, x, &i, 0, '+', 0)); }
 		else if ((c=='c')&&(s[i+1]=='o')&&(s[i+2]=='s')&&(s[i+3]=='('))
@@ -46,25 +46,27 @@ static real evals_(char s[], char sx[], real x[], unsigned* ishift, real init_r,
 			for (k=n-1; k>1; k--) n*=k;
 		else
 		{
-			for (j=0; sx[j]&&c!=sx[j]; j++);
-			if (sx[j])
+			if (c>='a'&&c<='z'||c>='A'&&c<='Z')
+				{ j=-1; do { j++; t=sx[j]; } while (t&&c!=t); }
+			else
+				t=0;
+			if (t)
 				n=n==0?x[j]:n*x[j];
 			else
 			{
 				if (((c=='+')||(c=='-')||(c=='/')||(c=='*')||(c=='^'))&&(prio(c)>prio(a)))
 					{ i++; n=evals_(s+i, sx, x, &i, n, c, prio(a)); c=s[i]; }
-				if (a=='+') r+=n;
-				else if (a=='-') r-=n;
-				else if (a=='*') r*=n;
-				else if (a=='/') r/=n;
-				else if (a=='^') r=pow(r, n);
-				if ((!c)||(c==')'))
-					{ *ishift+=i; return r; }
-				else if ((c=='+')||(c=='-')||(c=='/')||(c=='*')||(c=='^'))
+				if (a=='+') { r+=n; n=0.; d=0; }
+				else if (a=='-') { r-=n; n=0.; d=0; }
+				else if (a=='*') { r*=n; n=0.; d=0; }
+				else if (a=='/') { r/=n; n=0.; d=0; }
+				else if (a=='^') { r=pow(r, n); n=0.; d=0; }
+				if ((c=='+')||(c=='-')||(c=='/')||(c=='*')||(c=='^'))
 					{ if (prio(c)<=p) { *ishift+=i; return r; } a=c; }
+				else if ((!c)||(c==')'))
+					{ *ishift+=i; return r; }
 				else
 					{ *ishift+=i; return NAN; }
-				n=0.; d=0;
 			}
 		}
 		c=s[++i];

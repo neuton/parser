@@ -1,22 +1,26 @@
 #include <stdio.h>
 #include "parser.h"
 
-void test(char s[], real v)
+void tests(char s[], char sx[], real x[], real v)
 {
-	real r = eval(s);
+	real r = evals(s, sx, x);
+	if (v!=v)
+	{
+		if (r!=r)
+			puts("passed");
+		else
+			printf("failed %s = %g\n", s, r);
+	}
+	else
 	if (r == v)
 		puts("passed");
 	else
 		printf("failed %s = %g\n", s, r);
 }
 
-void tests(char s[], char sx[], real x[], real v)
+void test(char s[], real v)
 {
-	real r = evals(s, sx, x);
-	if (r == v)
-		puts("passed");
-	else
-		printf("failed %s = %g\n", s, r);
+	tests(s, "", NULL, v);
 }
 
 int main()
@@ -31,6 +35,7 @@ int main()
 	test("(14+10)*(3-4)", -24);
 	test("(((14/10)))", 1.4);
 	puts("-----------------------------");
+	test("1+2*3", 7);
 	test("14+10*(3-4)", 4);
 	test("14+10*(1)", 24);
 	test("14+10*(3-4)/(5+5)", 13);
@@ -41,5 +46,8 @@ int main()
 	tests("x + y", "xy", x, 3);
 	tests("x + yz", "xyz", x, 7);
 	tests("(x+y)/z + 2w", "xyzw", x, 9);
+	puts("-----------------------------");
+	test("((((1", 1);
+	test("1 +J 1", 0./0.);
 	return 0;
 }
