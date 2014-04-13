@@ -13,8 +13,7 @@ static short prio(char op)
 static real evals_(char s[], char sx[], real x[], unsigned* ishift, real init_r, char init_a, short p)
 {
 	real r=init_r, n=0, k;
-	unsigned d=0, i=0;
-	short j;
+	unsigned d=0, i=0, j;
 	char a=init_a, c=s[0], t;
 	while (1)
 	{
@@ -47,7 +46,7 @@ static real evals_(char s[], char sx[], real x[], unsigned* ishift, real init_r,
 		else
 		{
 			if (c>='a'&&c<='z'||c>='A'&&c<='Z')
-				{ j=-1; do { j++; t=sx[j]; } while (t&&c!=t); }
+				for (j=0; (t=sx[j])&&c!=t; j++);
 			else
 				t=0;
 			if (t)

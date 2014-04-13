@@ -44,7 +44,7 @@ int main()
 	puts("-----------------------------");
 	real x[] = {1, 2, 3, 4, 5};
 	tests("x + y", "xy", x, 3);
-	tests("x + yz", "xyz", x, 7);
+	tests("x + yz", "xyzabc%^&", x, 7);
 	tests("(x+y)/z + 2w", "xyzw", x, 9);
 	puts("-----------------------------");
 	test("((((1", 1);
